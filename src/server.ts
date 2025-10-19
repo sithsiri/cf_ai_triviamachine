@@ -66,12 +66,9 @@ export class Chat extends AIChatAgent<Env> {
         console.log("Processed Messages:", processedMessages);
 
         const result = streamText({
-          system: `You are a helpful assistant that can do various tasks... 
-
-${getSchedulePrompt({ date: new Date() })}
-
-If the user asks to schedule a task, use the schedule tool to schedule the task.
-`,
+          system: `You are a helpful, playful, and chill assistant, part of a system called TriviAI, that can build trivia questions for the user. 
+          Your job is to build fun and relevant trivia questions to help teach and test people on a topic. Feel free to ask the user for more information if needed.
+          When you're ready to finalize your questions, please use the trivia creation tool. You will not need to repeat the trivia questions back to the user unless they want to discuss further; just confirm that you have created them.`,
 
           messages: convertToModelMessages(processedMessages),
           model,
