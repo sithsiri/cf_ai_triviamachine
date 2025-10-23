@@ -2,38 +2,51 @@
  * Tool definitions for the AI chat agent
  * Tools can either require human confirmation or execute automatically
  */
-import { tool, type ToolSet } from "ai";
-import { z } from "zod/v3";
+// import { tool, type ToolSet } from "ai";
+// import { z } from "zod/v3";
+import { type ToolSet } from "ai";
 
-const saveTriviaSet = tool({
-  description: "Store a set of trivia questions for the user. They should be multiple-choice questions with one correct answer and several distractors.",
-  inputSchema: z.object({
-    triviaset: z.string().describe(`The trivia questions and answers in the following JSON format: 
-      {
-        "questions": [
-          {
-            "question": "What is the capital of France?",
-            "options": ["Berlin", "Madrid", "Paris", "Rome"],
-            "answer": "Paris"
-          },
-          ...
-        ]
-      }`),
-  }),
-  execute: async ({ triviaset }) => {
-    console.log(`Saving trivia set: ${triviaset}`);
-    // TODO: Here you would add logic to store the trivia set
-    // and importantly make sure the JSON is valid and well-formed.
-    return `Trivia set created successfully: ${triviaset}`;
-  }
-});
+// const saveTriviaSet = tool({
+//   description: "Store a set of trivia questions for the user. They should be multiple-choice questions with one correct answer and several distractors.",
+//   inputSchema: z.object({
+//     triviaset: z.string().describe(`The trivia questions and answers in the following JSON format:
+//       {
+//         "questions": [
+//           {
+//             "question": "What is the capital of France?",
+//             "options": ["Berlin", "Madrid", "Paris", "Rome"],
+//             "answer": "Paris"
+//           },
+//           ...
+//         ]
+//       }`),
+//   }),
+//   execute: async ({ triviaset }) => {
+//     console.log(`Saving trivia set: ${triviaset}`);
+//     try {
+//       // Parse to validate JSON
+//       const parsedTriviaSet = JSON.parse(triviaset);
+
+//       // Dispatch event to notify the UI
+//       const event = new CustomEvent('triviaSetCreated', {
+//         detail: { triviaset }
+//       });
+//       window.dispatchEvent(event);
+
+//       return `Trivia set created successfully!`;
+//     } catch (error) {
+//       console.error('Failed to parse trivia set:', error);
+//       return `Error: Invalid trivia set format`;
+//     }
+//   }
+// });
 
 /**
  * Export all available tools
  * These will be provided to the AI model to describe available capabilities
  */
 export const tools = {
-  saveTriviaSet
+  // saveTriviaSet
 } satisfies ToolSet;
 
 /**

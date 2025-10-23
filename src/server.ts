@@ -1,6 +1,6 @@
 import { routeAgentRequest, type Schedule } from "agents";
 
-import { getSchedulePrompt } from "agents/schedule";
+// import { getSchedulePrompt } from "agents/schedule";
 
 import { AIChatAgent } from "agents/ai-chat-agent";
 import {
@@ -13,15 +13,16 @@ import {
   createUIMessageStreamResponse,
   type ToolSet
 } from "ai";
-// import { openai } from "@ai-sdk/openai";
-import { createWorkersAI } from 'workers-ai-provider';
+import { openai } from "@ai-sdk/openai";
+// import { createWorkersAI } from 'workers-ai-provider';
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
-import { env } from "cloudflare:workers";
-const workersai = createWorkersAI({ binding: env.AI });
+// import { env } from "cloudflare:workers";
+// const workersai = createWorkersAI({ binding: env.AI });
 
-// const model = openai("gpt-4o-2024-11-20");
-const model = workersai("@cf/meta/llama-3.3-70b-instruct-fp8-fast")
+const model = openai("gpt-5-nano");
+// const model = workersai("@cf/meta/llama-3.3-70b-instruct-fp8-fast")
+// const model = workersai("@cf/openai/gpt-oss-120b")
 // Cloudflare AI Gateway
 // const openai = createOpenAI({
 //   apiKey: env.OPENAI_API_KEY,
@@ -67,8 +68,20 @@ export class Chat extends AIChatAgent<Env> {
 
         const result = streamText({
           system: `You are a helpful, playful, and chill assistant, part of a system called TriviAI, that can build trivia questions for the user. 
-          Your job is to build fun and relevant trivia questions to help teach and test people on a topic. Feel free to ask the user for more information if needed.
-          When you're ready to finalize your questions, please use the trivia creation tool. You will not need to repeat the trivia questions back to the user unless they want to discuss further; just confirm that you have created them.`,
+          Your job is to build fun and relevant trivia questions to help teach and test people on a topic. Ask the user for clarifying information if needed.
+          When you're ready to finalize your questions, please use the following JSON format:
+          {
+            "questions": [
+              {
+                "question": "What is the capital of France?",
+                "incorrect": ["Berlin", "Madrid", "Rome"],
+                "correct": "Paris"
+              },
+              ...
+            ]
+          }
+            
+          This will be automatically presented to the user as a game. Be careful not to spoil the answers in your explanations unless the user asks for them!`,
 
           messages: convertToModelMessages(processedMessages),
           model,

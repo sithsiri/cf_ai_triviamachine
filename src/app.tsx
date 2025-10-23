@@ -13,6 +13,7 @@ import { Avatar } from "@/components/avatar/Avatar";
 import { Toggle } from "@/components/toggle/Toggle";
 import { Textarea } from "@/components/textarea/Textarea";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import TriviaGame from "@/components/trivia-game/TriviaGame";
 import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvocationCard";
 
 // Icon imports
@@ -137,7 +138,10 @@ export default function Chat() {
 
   return (
     <div className="h-[100vh] w-full p-4 flex justify-center items-center bg-fixed overflow-hidden">
-      <div className="h-[calc(100vh-2rem)] w-full mx-auto flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800"> {/*  max-w-lg */}
+      <HasOpenAIKey />
+      <div className="h-[calc(100vh-2rem)] w-full mx-auto flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
+        {" "}
+        {/*  max-w-lg */}
         <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10">
           <div className="flex items-center justify-center h-8 w-8">
             <svg
@@ -159,7 +163,9 @@ export default function Chat() {
 
           <div className="flex-1">
             <h2 className="font-semibold text-base">TriviAI</h2>
-            <p className="font-semibold">Build a trivia game from any content!</p>
+            <p className="font-semibold">
+              Build a trivia game from any content!
+            </p>
           </div>
 
           <div className="flex items-center gap-2 mr-2">
@@ -191,7 +197,6 @@ export default function Chat() {
             <Trash size={20} />
           </Button>
         </div>
-
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24 max-h-[calc(100vh-10rem)]">
           {agentMessages.length === 0 && (
@@ -203,13 +208,14 @@ export default function Chat() {
                   </div>
                   <h3 className="font-semibold text-lg">TrivAI</h3>
                   <p className="text-muted-foreground text-sm">
-                    An AI assistant that can help you create trivia questions. I can help you study or just have fun with friends.
+                    An AI assistant that can help you create trivia questions. I
+                    can help you study or just have fun with friends.
                   </p>
 
                   <p className="text-muted-foreground text-sm">
-                    Paste a URL to build trivia from, paste your own content, or ask about a topic below! We will figure out the rest.
+                    Paste a URL to build trivia from, paste your own content, or
+                    ask about a topic below! We will figure out the rest.
                   </p>
-
                 </div>
               </Card>
             </div>
@@ -231,8 +237,9 @@ export default function Chat() {
                   className={`flex ${isUser ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`flex gap-2 max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"
-                      }`}
+                    className={`flex gap-2 max-w-[85%] ${
+                      isUser ? "flex-row-reverse" : "flex-row"
+                    }`}
                   >
                     {showAvatar && !isUser ? (
                       <Avatar username={"AI"} />
@@ -248,32 +255,61 @@ export default function Chat() {
                               // biome-ignore lint/suspicious/noArrayIndexKey: immutable index
                               <div key={i}>
                                 <Card
-                                  className={`p-3 rounded-md bg-neutral-100 dark:bg-neutral-900 ${isUser
+                                  className={`p-3 rounded-md bg-neutral-100 dark:bg-neutral-900 ${
+                                    isUser
                                       ? "rounded-br-none"
                                       : "rounded-bl-none border-assistant-border"
-                                    } ${part.text.startsWith("scheduled message")
+                                  } ${
+                                    part.text.startsWith("scheduled message")
                                       ? "border-accent/50"
                                       : ""
-                                    } relative`}
+                                  } relative`}
                                 >
                                   {part.text.startsWith(
                                     "scheduled message"
                                   ) && (
-                                      <span className="absolute -top-3 -left-2 text-base">
-                                        🕒
-                                      </span>
-                                    )}
-                                  <MemoizedMarkdown
-                                    id={`${m.id}-${i}`}
-                                    content={part.text.replace(
+                                    <span className="absolute -top-3 -left-2 text-base">
+                                      🕒
+                                    </span>
+                                  )}
+                                  {/* Try to detect a trivia JSON object and render the game UI */}
+                                  {(() => {
+                                    const text = part.text.replace(
                                       /^scheduled message: /,
                                       ""
-                                    )}
-                                  />
+                                    );
+                                    try {
+                                      const parsed = JSON.parse(text);
+                                      // Basic shape validation: must have questions array with question/correct/incorrect
+                                      if (
+                                        parsed &&
+                                        Array.isArray(parsed.questions) &&
+                                        parsed.questions.length > 0 &&
+                                        parsed.questions.every(
+                                          (q: any) =>
+                                            typeof q.question === "string" &&
+                                            typeof q.correct === "string" &&
+                                            Array.isArray(q.incorrect)
+                                        )
+                                      ) {
+                                        return <TriviaGame data={parsed} />;
+                                      }
+                                    } catch (e) {
+                                      // Not JSON — fall back to markdown
+                                    }
+
+                                    return (
+                                      <MemoizedMarkdown
+                                        id={`${m.id}-${i}`}
+                                        content={text}
+                                      />
+                                    );
+                                  })()}
                                 </Card>
                                 <p
-                                  className={`text-xs text-muted-foreground mt-1 ${isUser ? "text-right" : "text-left"
-                                    }`}
+                                  className={`text-xs text-muted-foreground mt-1 ${
+                                    isUser ? "text-right" : "text-left"
+                                  }`}
                                 >
                                   {formatTime(
                                     m.metadata?.createdAt
@@ -334,7 +370,6 @@ export default function Chat() {
           })}
           <div ref={messagesEndRef} />
         </div>
-
         {/* Input Area */}
         <form
           onSubmit={(e) => {
@@ -355,7 +390,9 @@ export default function Chat() {
                 placeholder={
                   pendingToolCallConfirmation
                     ? "Please respond to the tool confirmation above..."
-                    : (agentMessages.length > 0 ? "Send a message..." : "Paste content you want to start with, or just ask me about a topic to create a trivia game...")
+                    : agentMessages.length > 0
+                      ? "Send a message..."
+                      : "Paste content you want to start with, or just ask me about a topic to create a trivia game..."
                 }
                 className="flex w-full border border-neutral-200 dark:border-neutral-700 px-3 py-2  ring-offset-background placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-700 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base pb-10 dark:bg-neutral-900"
                 value={agentInput}
