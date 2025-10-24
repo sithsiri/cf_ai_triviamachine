@@ -28,11 +28,11 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ToastContext.Provider value={{ push, dismiss }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 w-[320px]">
+      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 w-[320px] text-black dark:text-white">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="p-3 rounded-md shadow-md bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700"
+            className="bg-neutral-100 dark:bg-neutral-900 p-3 rounded-md shadow-md border border-neutral-200 dark:border-neutral-800"
           >
             <div className="font-semibold">{t.title}</div>
             {t.description && (
