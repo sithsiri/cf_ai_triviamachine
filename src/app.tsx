@@ -241,7 +241,7 @@ export default function Chat() {
                     }`}
                   >
                     {showAvatar && !isUser ? (
-                      <Avatar username={"AI"} /> // TODO: customize avatar
+                      <Avatar username={"Artificial Intelligence"} /> // TODO: customize avatar
                     ) : (
                       !isUser && <div className="w-8" />
                     )}
@@ -295,7 +295,7 @@ export default function Chat() {
                                     return (
                                       <MemoizedMarkdown
                                         id={`${m.id}-${i}`}
-                                        content={text}
+                                        content={text ? text : (part.state === "streaming" ? "On the tip of my tongue..." : "An error occurred and no response was generated.")}
                                       />
                                     );
                                   })()}
@@ -312,6 +312,24 @@ export default function Chat() {
                                   )}
                                 </p>
                               </div>
+                            );
+                          }
+
+                          if (part.type === "reasoning") {
+                            return (
+                              <MemoizedMarkdown
+                                id={`${m.id}-${i}`}
+                                content={part.text ? part.text : (part.state === "streaming" ? "(Thinking...)" : "(Finished thinking)")}
+                              />
+                            );
+                          }
+
+                          if (part.type === "step-start") {
+                            return (
+                              <MemoizedMarkdown
+                                id={`${m.id}-${i}`}
+                                content={m.parts.length === 0 ? "(Reading...)" : ""}
+                              />
                             );
                           }
 
@@ -385,7 +403,7 @@ export default function Chat() {
                   pendingToolCallConfirmation
                     ? "Please respond to the tool confirmation above..."
                     : agentMessages.length > 0
-                      ? "Send a message..."
+                      ? "Send a message or paste content..."
                       : "Paste content you want to start with, or just ask me about a topic to create a trivia game..."
                 }
                 className="flex w-full border border-neutral-200 dark:border-neutral-700 px-3 py-2  ring-offset-background placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-700 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base pb-10 dark:bg-neutral-900"

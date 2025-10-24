@@ -25,7 +25,12 @@ const AvatarComponent = ({
   toggled,
   username
 }: AvatarProps) => {
-  const firstInitial = username.charAt(0).toUpperCase();
+  // const firstInitial = username.charAt(0).toUpperCase();
+  const initials = username
+    .split(" ")
+    .map((n) => n.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join("");
 
   return (
     <Slot
@@ -57,7 +62,7 @@ const AvatarComponent = ({
           alt={username}
         />
       ) : (
-        <p className="text-100 font-bold">{firstInitial}</p>
+        <p className="text-100 font-bold">{initials}</p>
       )}
     </Slot>
   );
