@@ -14,6 +14,7 @@ import { Toggle } from "@/components/toggle/Toggle";
 import { Textarea } from "@/components/textarea/Textarea";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import TriviaGame from "@/components/trivia-game/TriviaGame";
+import { extractJSONFromText, isTriviaSet } from "@/lib/utils";
 import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvocationCard";
 
 // Icon imports
@@ -140,8 +141,6 @@ export default function Chat() {
     <div className="h-[100vh] w-full p-4 flex justify-center items-center bg-fixed overflow-hidden">
       <HasOpenAIKey />
       <div className="h-[calc(100vh-2rem)] w-full mx-auto flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
-        {" "}
-        {/*  max-w-lg */}
         <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-3 sticky top-0 z-10">
           <div className="flex items-center justify-center h-8 w-8">
             <svg
@@ -213,8 +212,8 @@ export default function Chat() {
                   </p>
 
                   <p className="text-muted-foreground text-sm">
-                    Paste a URL to build trivia from, paste your own content, or
-                    ask about a topic below! We will figure out the rest.
+                    Paste your own content, or ask about a topic below! We will
+                    figure out the rest.
                   </p>
                 </div>
               </Card>
@@ -278,24 +277,19 @@ export default function Chat() {
                                       /^scheduled message: /,
                                       ""
                                     );
-                                    try {
-                                      const parsed = JSON.parse(text);
-                                      // Basic shape validation: must have questions array with question/correct/incorrect
-                                      if (
-                                        parsed &&
-                                        Array.isArray(parsed.questions) &&
-                                        parsed.questions.length > 0 &&
-                                        parsed.questions.every(
-                                          (q: any) =>
-                                            typeof q.question === "string" &&
-                                            typeof q.correct === "string" &&
-                                            Array.isArray(q.incorrect)
-                                        )
-                                      ) {
-                                        return <TriviaGame data={parsed} />;
-                                      }
-                                    } catch (e) {
-                                      // Not JSON — fall back to markdown
+                                    const parsed = extractJSONFromText(text);
+                                    if (
+                                      parsed &&
+                                      typeof parsed === "object" &&
+                                      Array.isArray((parsed as any).questions) &&
+                                      (parsed as any).questions.length > 0 &&
+                                      (parsed as any).questions.every((q: any) =>
+                                        typeof q.question === "string" &&
+                                        typeof q.correct === "string" &&
+                                        Array.isArray(q.incorrect)
+                                      )
+                                    ) {
+                                      return <TriviaGame data={parsed as any} />;
                                     }
 
                                     return (

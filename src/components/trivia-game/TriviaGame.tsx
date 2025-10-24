@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useToast } from "../toast/useToast";
 
 type TriviaQuestion = {
   question: string;
@@ -32,11 +33,17 @@ export function TriviaGame({ data }: { data: TriviaSet }) {
     setShowAnswer(true);
   }
 
+  const { show } = useToast();
+
   function next() {
     setSelected(null);
     setShowAnswer(false);
     if (currentIndex < data.questions.length - 1) {
       setCurrentIndex((i) => i + 1);
+    }
+    else {
+      // finished
+      show({ title: "Quiz finished", description: `Score: ${score} / ${data.questions.length}` });
     }
   }
 
