@@ -8,12 +8,12 @@ An AI-powered chat agent that builds fun and interesting trivia for you, built f
 
 ## Features
 
-- ⚡️ Immediate, interactive results
+- ⚡️ Immediate, interactive trivia games and results
 - 💬 Interactive chat interface with AI
 - 🔄 State management and chat history
 - 🎨 Modern, responsive UI
 - 🧠 Intelligent responses powered by GPT-5-nano
-
+x
 ## Prerequisites
 
 - Cloudflare account
