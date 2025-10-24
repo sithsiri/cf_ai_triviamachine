@@ -208,12 +208,10 @@ export default function Chat() {
                   <h3 className="font-semibold text-lg">TrivAI</h3>
                   <p className="text-muted-foreground text-sm">
                     An AI assistant that can help you create trivia questions. I
-                    can help you study or just have fun with friends.
-                  </p>
-
-                  <p className="text-muted-foreground text-sm">
-                    Paste your own content, or ask about a topic below! We will
-                    figure out the rest.
+                    can help you study or have fun. Paste your own content, or ask
+                    about a topic below!
+                    <br />
+                    We will figure out the rest.
                   </p>
                 </div>
               </Card>
@@ -241,7 +239,7 @@ export default function Chat() {
                     }`}
                   >
                     {showAvatar && !isUser ? (
-                      <Avatar username={"AI"} />
+                      <Avatar username={"AI"} /> // TODO: customize avatar
                     ) : (
                       !isUser && <div className="w-8" />
                     )}

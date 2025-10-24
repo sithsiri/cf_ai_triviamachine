@@ -71,6 +71,8 @@ export class Chat extends AIChatAgent<Env> {
           Your job is to build fun and relevant trivia questions to help teach and test people on a topic. Ask the user for clarifying information if needed.
           When you're ready to finalize your questions, please use the following JSON format:
           {
+            "title": "Optional Title",
+            "description": "A brief, optional description of the trivia set or funny intro.",
             "questions": [
               {
                 "question": "What is the capital of France?",
