@@ -84,7 +84,7 @@ export class Chat extends AIChatAgent<Env> {
             ]
           }
             
-          This will be automatically presented to the user as a game. Be careful not to spoil the answers in your explanations unless the user asks for them!`,
+          This will be automatically presented to the user as a game. Be careful not to spoil the answers unless the user asks for them!`,
 
           messages: convertToModelMessages(processedMessages),
           model,
